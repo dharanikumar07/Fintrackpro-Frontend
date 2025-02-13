@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: angular_app
+    ports:
+      - "4200:4200" # Angular Dev Server
+    volumes:
+      - .:/app # Mounts project for live updates
+      - /app/node_modules # Prevents overwriting node_modules
+      - ./docker-compose/ssl:/app/ssl # Mount SSL folder to correct path
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend-network
+
+  nginx:
+    build:
+      context: ./docker-compose/nginx
+      dockerfile: nginx.dockerfile
+    container_name: nginx_frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker-compose/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker-compose/ssl:/etc/nginx/ssl
+      - ./docker-compose/nginx/entrypoint.sh:/entrypoint.sh
+    depends_on:
+      - frontend
+    networks:
+      - frontend-network
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+
+networks:
+  frontend-network:
+    driver: bridge
