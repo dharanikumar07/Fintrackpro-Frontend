@@ -1,0 +1,7 @@
+1.) open entrypoint.sh (in vs code below right corner crlf option is there click that and change that to lf)
+
+2.) [docker compose up --build -d] run this command to up the container
+
+3.) [docker exec -it angular_app bash] run this command to go to forntend docker bash
+
+4.) run ng serve inside the docker bash
